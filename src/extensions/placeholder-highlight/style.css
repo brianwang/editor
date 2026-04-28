@@ -1,0 +1,33 @@
+/* ── PlaceholderHighlight chip styles ────────────────────────────────────────
+   Consumed by the PlaceholderHighlight Tiptap extension.
+   Import alongside the extension in your entry point:
+     import '@/extensions/placeholder-highlight/style.css'
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* Shared base for both chip types */
+.umo-placeholder-field,
+.umo-placeholder-ai {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 3px;
+  font-size: 0.85em;
+  line-height: 1.6;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+/* Field binding chip — blue palette */
+.umo-placeholder-field {
+  background: #e6f4ff;
+  border: 1px solid #91caff;
+  color: #1677ff;
+}
+
+/* AI instruction chip — purple palette */
+.umo-placeholder-ai {
+  background: #f9f0ff;
+  border: 1px solid #d3adf7;
+  color: #722ed1;
+}

@@ -170,6 +170,9 @@
             v-if="!disableMenu('chinese-case')"
           />
         </div>
+        <div class="umo-virtual-group">
+          <menus-toolbar-tools-ai-generate />
+        </div>
         <div class="virtual-group is-slot">
           <slot name="toolbar_tools" toolbar-mode="classic" />
         </div>

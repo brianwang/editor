@@ -69,6 +69,7 @@ import Toc from './toc'
 import TypeWriter from './type-writer'
 import Video from './video'
 import WordWrap from './word-wrap'
+import PlaceholderHighlight from './placeholder-highlight'
 
 const nodeTypes = [
   'paragraph',
@@ -152,6 +153,7 @@ export const getDefaultExtensions = ({ container, options, uploadFileMap }) => {
     toc: Toc,
     'text-box': TextBox,
     'web-page': Iframe,
+    'placeholder-highlight': PlaceholderHighlight,
   }
 
   const buildInExtensions = [
