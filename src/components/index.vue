@@ -77,6 +77,7 @@ import { getOpitons } from '@/utils/options'
 import { getSelectionNode, getSelectionText } from '@/utils/selection'
 import { shortId } from '@/utils/short-id'
 import { getCurrentInstance } from 'vue'
+import { usePostMessage, postToParent } from '@/composables/post-message'
 const { toBlob, toJpeg, toPng } = domToImage
 
 defineOptions({ name: 'UmoEditor' })
@@ -220,6 +221,15 @@ onMounted(() => {
   setSkin(skin.value)
   window.addEventListener('beforeunload', handleBeforeUnload)
 })
+
+// postMessage bridge (iframe mode)
+usePostMessage(editor)
+watch(
+  () => editor.value?.getHTML?.(),
+  useDebounceFn((html) => {
+    if (html != null) postToParent({ type: 'content-changed', html })
+  }, 1000),
+)
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', handleBeforeUnload)
   clearAutoSaveInterval()
@@ -1113,6 +1123,7 @@ const saveContent = async (showMessage = true) => {
       return
     }
     emits('saved')
+    postToParent({ type: 'content-saved', html: editor.value?.getHTML?.() ?? '' })
     contentUpdated = false
     if (saveBack.showMessage) {
       useMessage('success', {
