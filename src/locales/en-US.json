@@ -389,6 +389,18 @@
       }
     },
     "mindMap": "Mind Map",
+    "aiActions": {
+      "text": "AI Assistant",
+      "write": "AI Write",
+      "polish": "AI Polish",
+      "summarize": "AI Summarize",
+      "expand": "AI Expand",
+      "shorten": "AI Shorten",
+      "translate": "AI Translate",
+      "writeAfter": "AI Write (Insert After)"
+    },
+    "echartsPresets": "Chart Templates",
+    "documentTemplate": "Doc Templates",
     "qrcode": {
       "text": "QR Code",
       "edit": "Edit QR Code",
@@ -792,6 +804,12 @@
   },
   "dialog": {
     "cancel": "Cancel"
+  },
+  "documentTemplate": {
+    "title": "Select Document Template",
+    "confirm": "Use This Template",
+    "cancel": "Cancel",
+    "replaceWarning": "This will replace the current document content. Continue?"
   },
   "copy": {
     "notSupported": "Browser does not support copy function",

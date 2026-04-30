@@ -66,13 +66,19 @@ export default {
       interval: 300000,
     },
   },
+  ai: {
+    enabled: true,
+    actions: ['write', 'polish', 'summarize', 'expand', 'shorten', 'translate'],
+  },
   echarts: {
     mode: 1,
     renderImage: false,
+    presets: [],
     onCustomSettings() {
       return null
     },
   },
+  documentTemplates: [],
   webPages: [
     {
       label: {

@@ -5,12 +5,16 @@
  *   { type: 'load-content',    html: string }
  *   { type: 'replace-content', html: string }
  *   { type: 'set-readonly',    readonly: boolean }
+ *   { type: 'ai-action-result', selectionId: string, result: string, mode: 'insert'|'replace' }
+ *   { type: 'icon-library-result', icons: Array<{ name, svg, category? }> }
  *
  * Editor → Parent:
  *   { type: 'editor-ready' }
  *   { type: 'content-changed', html: string }   (debounced 1000ms)
  *   { type: 'content-saved',   html: string }
  *   { type: 'ai-generate-requested' }
+ *   { type: 'ai-action-requested', action: string, text: string, selectionId: string }
+ *   { type: 'icon-library-requested', query?: string }
  */
 
 export const isIframeMode = () => window.parent !== window
@@ -41,6 +45,14 @@ export function setupPostMessageListener(editorRef) {
     }
     if (type === 'set-readonly') {
       editorRef.value?.setEditable(!readonly)
+    }
+    if (type === 'ai-action-result') {
+      const { selectionId, result, mode } = event.data
+      window.dispatchEvent(new CustomEvent('umo-ai-result', { detail: { selectionId, result, mode } }))
+    }
+    if (type === 'icon-library-result') {
+      const { icons } = event.data
+      window.dispatchEvent(new CustomEvent('umo-icon-library-result', { detail: { icons } }))
     }
   }
 

@@ -389,6 +389,18 @@
       }
     },
     "mindMap": "思维导图",
+    "aiActions": {
+      "text": "AI助手",
+      "write": "AI续写",
+      "polish": "AI润色",
+      "summarize": "AI摘要",
+      "expand": "AI扩写",
+      "shorten": "AI缩写",
+      "translate": "AI翻译",
+      "writeAfter": "AI续写（插入后方）"
+    },
+    "echartsPresets": "图表模板",
+    "documentTemplate": "文档模板",
     "qrcode": {
       "text": "二维码",
       "edit": "编辑二维码",
@@ -794,6 +806,12 @@
   },
   "dialog": {
     "cancel": "取消"
+  },
+  "documentTemplate": {
+    "title": "选择文档模板",
+    "confirm": "使用此模板",
+    "cancel": "取消",
+    "replaceWarning": "将替换当前文档内容，是否继续？"
   },
   "copy": {
     "notSupported": "当前浏览器不支持复制功能",

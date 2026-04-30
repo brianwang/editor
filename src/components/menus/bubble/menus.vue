@@ -151,6 +151,7 @@
       <menus-toolbar-base-background-color />
       <menus-toolbar-base-highlight v-if="!disable('highlight')" />
     </template>
+    <menus-bubble-ai-actions />
     <template v-else>
       <menus-bubble-text-box-border />
       <menus-bubble-text-box-background />
