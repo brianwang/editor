@@ -12,16 +12,22 @@
           v-for="action in options.ai?.actions"
           :key="action"
           :value="action"
-          @click="requestAiAction(action, 'replace')"
+          @click="requestAiAction(action)"
         >
           {{ t(`tools.aiActions.${action}`) }}
         </t-dropdown-item>
-        <t-dropdown-item divider value="write-after" @click="requestAiAction('write', 'insert')">
+        <t-dropdown-item divider value="write-after" @click="requestAiAction('write')">
           {{ t('tools.aiActions.writeAfter') }}
         </t-dropdown-item>
       </t-dropdown-menu>
     </template>
   </menus-button>
+  <ai-assistant-action-progress
+    :visible="progressVisible"
+    :progress="progress"
+    :action="progressAction"
+    @stop="stopAiAction"
+  />
 </template>
 
 <script setup>
@@ -29,5 +35,11 @@ import { useAiActions } from '@/composables/ai-actions'
 
 const editor = inject('editor')
 const options = inject('options')
-const { requestAiAction } = useAiActions(editor)
+const {
+  progressVisible,
+  progress,
+  progressAction,
+  requestAiAction,
+  stopAiAction,
+} = useAiActions(editor, options)
 </script>

@@ -6,6 +6,15 @@
  *   { type: 'replace-content', html: string }
  *   { type: 'set-readonly',    readonly: boolean }
  *   { type: 'ai-action-result', selectionId: string, result: string, mode: 'insert'|'replace' }
+ *   { type: 'ai-template-generate-result', requestId: string, result: { content: string } }
+ *   { type: 'ai-polish-result', requestId: string, result: { content: string } }
+ *   { type: 'ai-chat-generate-result', requestId: string, result: { content: string } }
+ *   { type: 'ai-context-action-result', requestId: string, result: { content: string } }
+ *   { type: 'template-save-result', requestId: string, result: object }
+ *   { type: 'template-versions-result', requestId: string, result: Array<object> }
+ *   { type: 'template-rollback-result', requestId: string, result: object }
+ *   { type: 'style-template-list-result', requestId: string, result: Array<object> }
+ *   { type: 'style-template-apply-result', requestId: string, result: { content: string } }
  *   { type: 'icon-library-result', icons: Array<{ name, svg, category? }> }
  *
  * Editor → Parent:
@@ -14,6 +23,15 @@
  *   { type: 'content-saved',   html: string }
  *   { type: 'ai-generate-requested' }
  *   { type: 'ai-action-requested', action: string, text: string, selectionId: string }
+ *   { type: 'ai-template-generate-requested', requestId: string, payload: object }
+ *   { type: 'ai-polish-requested', requestId: string, payload: object }
+ *   { type: 'ai-chat-generate-requested', requestId: string, payload: object }
+ *   { type: 'ai-context-action-requested', requestId: string, payload: object }
+ *   { type: 'template-save-requested', requestId: string, payload: object }
+ *   { type: 'template-versions-requested', requestId: string, payload: object }
+ *   { type: 'template-rollback-requested', requestId: string, payload: object }
+ *   { type: 'style-template-list-requested', requestId: string, payload: object }
+ *   { type: 'style-template-apply-requested', requestId: string, payload: object }
  *   { type: 'icon-library-requested', query?: string }
  */
 
@@ -37,10 +55,10 @@ export function setupPostMessageListener(editorRef) {
   const handler = (event) => {
     const { type, html, readonly } = event.data ?? {}
 
-    if (type === 'load-content' && html != null) {
+    if (type === 'load-content' && html !== null && html !== undefined) {
       editorRef.value?.setContent(html)
     }
-    if (type === 'replace-content' && html != null) {
+    if (type === 'replace-content' && html !== null && html !== undefined) {
       editorRef.value?.setContent(html)
     }
     if (type === 'set-readonly') {

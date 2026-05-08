@@ -519,6 +519,124 @@ export default new ObjectSchema({
       },
     },
   },
+  ai: {
+    merge: 'assign',
+    validate: 'object',
+    required: false,
+    schema: {
+      enabled: {
+        merge: 'replace',
+        validate: 'boolean',
+        required: false,
+      },
+      actions: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !Array.isArray(value)) {
+            throw new Error('Key "ai": Key "actions" must be a array.')
+          }
+        },
+        required: false,
+      },
+      onGenerateTemplate: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "ai": Key "onGenerateTemplate" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      onPolish: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "ai": Key "onPolish" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      onChatGenerate: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "ai": Key "onChatGenerate" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      onContextAction: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "ai": Key "onContextAction" must be a async function.')
+          }
+        },
+        required: false,
+      },
+    },
+  },
+  templateStore: {
+    merge: 'assign',
+    validate: 'object',
+    required: false,
+    schema: {
+      list: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "list" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      save: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "save" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      versions: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "versions" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      rollback: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "rollback" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      listStyleTemplates: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "listStyleTemplates" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      applyStyleTemplate: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "applyStyleTemplate" must be a async function.')
+          }
+        },
+        required: false,
+      },
+    },
+  },
   echarts: {
     merge: 'replace',
     validate: 'object',
@@ -532,6 +650,11 @@ export default new ObjectSchema({
       renderImage: {
         merge: 'replace',
         validate: 'boolean',
+        required: false,
+      },
+      presets: {
+        merge: 'replace',
+        validate: 'array',
         required: false,
       },
       onCustomSettings: {
@@ -573,6 +696,15 @@ export default new ObjectSchema({
           )
         }
       })
+    },
+    required: false,
+  },
+  documentTemplates: {
+    merge: 'replace',
+    validate(value) {
+      if (value && !Array.isArray(value)) {
+        throw new Error('Key "documentTemplates": must be a array.')
+      }
     },
     required: false,
   },

@@ -1,14 +1,16 @@
 <template>
   <menus-button
-    ico="ai-generate"
-    :text="t('tools.aiGenerate.text')"
+    v-if="options.ai?.enabled !== false"
+    ico="ai-actions"
+    :text="t('aiAssistant.title')"
     huge
-    @menu-click="handleClick"
+    @menu-click="dialogVisible = true"
   />
+  <ai-assistant-dialog v-model:visible="dialogVisible" initial-tab="templates" />
 </template>
 
 <script setup>
-function handleClick() {
-  window.parent.postMessage({ type: 'ai-generate-requested' }, '*')
-}
+const options = inject('options')
+
+let dialogVisible = $ref(false)
 </script>

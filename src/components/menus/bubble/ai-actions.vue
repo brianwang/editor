@@ -12,7 +12,7 @@
             v-for="action in options.ai?.actions"
             :key="action"
             :value="action"
-            @click="requestAiAction(action, 'replace')"
+            @click="requestAiAction(action)"
           >
             {{ t(`tools.aiActions.${action}`) }}
           </t-dropdown-item>
@@ -20,6 +20,12 @@
       </template>
     </menus-button>
   </template>
+  <ai-assistant-action-progress
+    :visible="progressVisible"
+    :progress="progress"
+    :action="progressAction"
+    @stop="stopAiAction"
+  />
 </template>
 
 <script setup>
@@ -27,7 +33,13 @@ import { useAiActions } from '@/composables/ai-actions'
 
 const editor = inject('editor')
 const options = inject('options')
-const { requestAiAction } = useAiActions(editor)
+const {
+  progressVisible,
+  progress,
+  progressAction,
+  requestAiAction,
+  stopAiAction,
+} = useAiActions(editor, options)
 
 const hasTextSelection = $computed(() => {
   if (!editor.value) return false

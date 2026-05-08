@@ -147,11 +147,11 @@
     <menus-toolbar-insert-link v-if="!disable('link')" />
     <div class="umo-bubble-menu-divider"></div>
     <menus-toolbar-base-color />
+    <menus-bubble-ai-actions />
     <template v-if="!is('textBox')">
       <menus-toolbar-base-background-color />
       <menus-toolbar-base-highlight v-if="!disable('highlight')" />
     </template>
-    <menus-bubble-ai-actions />
     <template v-else>
       <menus-bubble-text-box-border />
       <menus-bubble-text-box-background />

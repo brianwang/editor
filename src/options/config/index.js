@@ -70,6 +70,7 @@ export default {
     enabled: true,
     actions: ['write', 'polish', 'summarize', 'expand', 'shorten', 'translate'],
   },
+  templateStore: {},
   echarts: {
     mode: 1,
     renderImage: false,

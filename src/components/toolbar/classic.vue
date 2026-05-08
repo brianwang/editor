@@ -171,7 +171,7 @@
           />
         </div>
         <div class="umo-virtual-group">
-          <menus-toolbar-tools-ai-generate />
+          <menus-toolbar-tools-ai-generate v-if="!disableMenu('ai')" />
         </div>
         <div class="virtual-group is-slot">
           <slot name="toolbar_tools" toolbar-mode="classic" />

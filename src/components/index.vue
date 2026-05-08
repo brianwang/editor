@@ -227,7 +227,9 @@ usePostMessage(editor)
 watch(
   () => editor.value?.getHTML?.(),
   useDebounceFn((html) => {
-    if (html != null) postToParent({ type: 'content-changed', html })
+    if (html !== null && html !== undefined) {
+      postToParent({ type: 'content-changed', html })
+    }
   }, 1000),
 )
 onBeforeUnmount(() => {

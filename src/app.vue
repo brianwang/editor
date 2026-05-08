@@ -1,5 +1,5 @@
 <template>
-  <div class="examples">
+  <div class="examples" :class="{ 'is-iframe': isIframeMode }">
     <div class="box">
       <umo-editor ref="editorRef" v-bind="options"></umo-editor>
     </div>
@@ -10,9 +10,12 @@
 </template>
 
 <script setup>
+import { createEditorBackendAi, listEditorTemplates } from '@/api/backend-ai'
 import { shortId } from '@/utils/short-id'
 
 const editorRef = $ref(null)
+const backendAi = createEditorBackendAi()
+const isIframeMode = new URLSearchParams(window.location.search).get('iframe') === '1'
 const templates = [
   {
     title: '工作任务',
@@ -44,6 +47,9 @@ const options = $ref({
     showBookmark: true,
   },
   templates,
+  documentTemplates: [],
+  ai: backendAi.ai,
+  templateStore: backendAi.templateStore,
   cdnUrl: 'https://cdn.umodoc.com',
   shareUrl: 'https://www.umodoc.com',
   file: {
@@ -117,6 +123,14 @@ const options = $ref({
     console.log(id, url, type)
   },
 })
+
+onMounted(async () => {
+  try {
+    options.documentTemplates = await listEditorTemplates({ status: 'published' })
+  } catch (error) {
+    console.warn('load editor templates failed', error)
+  }
+})
 </script>
 
 <style>
@@ -130,12 +144,19 @@ body {
   display: flex;
   height: calc(100vh - 40px);
 }
+.examples.is-iframe {
+  margin: 0;
+  height: 100vh;
+}
 .box {
   border: solid 1px #ddd;
   box-sizing: border-box;
   position: relative;
   width: 100%;
   height: 100%;
+}
+.examples.is-iframe .box {
+  border: none;
 }
 
 html,

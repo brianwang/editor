@@ -31,6 +31,7 @@
         <slot name="bubble_menu" v-bind="props" />
       </template>
     </menus-bubble>
+    <ai-assistant-context-menu v-if="!options.disableExtensions.includes('ai')" />
   </template>
 </template>
 
