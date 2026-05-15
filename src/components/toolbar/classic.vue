@@ -27,6 +27,9 @@
       </div>
       <template v-if="currentMenu === 'base'">
         <div class="umo-virtual-group">
+          <menus-toolbar-tools-new-document v-if="!disableMenu('new-document')" />
+        </div>
+        <div class="umo-virtual-group">
           <menus-toolbar-base-undo />
           <menus-toolbar-base-redo />
           <menus-toolbar-base-format-painter />
@@ -172,6 +175,7 @@
         </div>
         <div class="umo-virtual-group">
           <menus-toolbar-tools-ai-generate v-if="!disableMenu('ai')" />
+          <menus-toolbar-tools-template-library v-if="!disableMenu('template-library')" />
         </div>
         <div class="virtual-group is-slot">
           <slot name="toolbar_tools" toolbar-mode="classic" />

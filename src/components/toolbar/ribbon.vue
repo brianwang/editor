@@ -15,6 +15,9 @@
       <div class="umo-ribbon-container">
         <template v-if="currentMenu === 'base'">
           <div class="umo-virtual-group">
+            <menus-toolbar-tools-new-document v-if="!disableMenu('new-document')" />
+          </div>
+          <div class="umo-virtual-group">
             <div class="umo-virtual-group-row">
               <menus-toolbar-base-undo />
               <menus-toolbar-base-redo />
@@ -77,6 +80,9 @@
           </div>
           <div class="umo-virtual-group">
             <menus-toolbar-base-print v-if="!disableMenu('print')" />
+          </div>
+          <div class="umo-virtual-group">
+            <menus-toolbar-tools-template-library v-if="!disableMenu('template-library')" />
           </div>
           <div class="virtual-group is-slot">
             <slot name="toolbar_base" toolbar-mode="ribbon" />

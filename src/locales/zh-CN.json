@@ -814,6 +814,48 @@
     "replaceWarning": "将替换当前文档内容，是否继续？",
     "empty": "请选择模板查看预览"
   },
+  "newDocument": {
+    "title": "新增文档",
+    "name": "请输入文档标题",
+    "search": "搜索模板",
+    "allCategories": "全部",
+    "defaultCategory": "通用",
+    "blank": "空白文档",
+    "blankDescription": "不使用模板，创建空白文档",
+    "blankPreview": "空白文档",
+    "create": "创建文档",
+    "success": "文档已创建",
+    "failed": "文档创建失败"
+  },
+  "templateLibrary": {
+    "title": "模板库",
+    "search": "搜索模板",
+    "empty": "暂无模板",
+    "new": "新建",
+    "create": "新增模板",
+    "update": "保存修改",
+    "delete": "删除",
+    "apply": "应用模板",
+    "name": "模板名称",
+    "description": "模板描述",
+    "published": "已发布",
+    "draft": "草稿",
+    "contentPlaceholder": "请输入HTML片段，支持变量占位符和 [AI:生成要求]",
+    "chartPlaceholder": "请输入ECharts options JSON，或 {\"chartOptions\":{...}}",
+    "saveSuccess": "模板已保存",
+    "deleteSuccess": "模板已删除",
+    "deleteFailed": "模板删除失败",
+    "applyFailed": "模板应用失败",
+    "recommendTitle": "推荐模板",
+    "recommendEmpty": "暂无推荐模板",
+    "types": {
+      "document": "文档模板",
+      "text": "文字模板",
+      "chart": "图表模板",
+      "data": "数据模板",
+      "style": "样式模板"
+    }
+  },
   "aiAssistant": {
     "title": "AI助手",
     "generate": "模板生成",

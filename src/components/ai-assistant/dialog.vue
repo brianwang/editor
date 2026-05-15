@@ -48,6 +48,23 @@
         <div v-if="placeholderText" class="umo-ai-placeholder">
           {{ placeholderText }}
         </div>
+        <div v-if="prompt.trim()" class="umo-ai-recommend">
+          <div class="umo-ai-recommend-title">{{ t('templateLibrary.recommendTitle') }}</div>
+          <div v-if="recommendedTemplates.length" class="umo-ai-recommend-list">
+            <button
+              v-for="item in recommendedTemplates"
+              :key="item.id || item.value"
+              type="button"
+              @click="selectRecommendedTemplate(item)"
+            >
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.reason || item.description || item.type }}</span>
+            </button>
+          </div>
+          <div v-else-if="!recommending" class="umo-ai-empty">
+            {{ t('templateLibrary.recommendEmpty') }}
+          </div>
+        </div>
         <div class="umo-ai-actions">
           <t-button
             theme="primary"
@@ -192,12 +209,14 @@
 <script setup>
 import {
   applyGeneratedContent,
+  applyTemplateToEditor,
   extractTemplatePlaceholders,
   generateTemplateContent,
   getAiContext,
   listTemplateVersions,
   listTemplates,
   polishContent,
+  recommendTemplates,
   rollbackTemplate,
   saveTemplate,
   replaceDocumentContent,
@@ -239,6 +258,10 @@ let loading = $ref(false)
 let loadingTemplates = $ref(false)
 let savingTemplate = $ref(false)
 let rollingBack = $ref(false)
+let recommending = $ref(false)
+let recommendedTemplates = $ref([])
+let recommendTimer = null
+let recommendRequestId = 0
 
 const templateForm = $ref({
   title: '',
@@ -289,6 +312,18 @@ watch(
   },
 )
 
+watch(
+  () => prompt,
+  () => {
+    if (!props.visible || activeTab !== 'generate' || !prompt.trim()) {
+      recommendedTemplates = []
+      return
+    }
+    if (recommendTimer) clearTimeout(recommendTimer)
+    recommendTimer = setTimeout(loadRecommendations, 450)
+  },
+)
+
 const normalizeContent = (result) => {
   return result?.content || result?.html || result?.text || ''
 }
@@ -322,6 +357,49 @@ const generateTemplate = async () => {
     useMessage('error', error?.message || t('aiAssistant.generateFailed'))
   } finally {
     loading = false
+  }
+}
+
+const loadRecommendations = async () => {
+  const currentRequestId = ++recommendRequestId
+  recommending = true
+  try {
+    const context = getAiContext(editor, options)
+    const result = await recommendTemplates(options, {
+      prompt,
+      context,
+      types: ['document', 'text', 'chart', 'data'],
+      limit: 6,
+    })
+    if (currentRequestId !== recommendRequestId) return
+    recommendedTemplates = Array.isArray(result) ? result : result?.items || []
+  } catch {
+    if (currentRequestId === recommendRequestId) {
+      recommendedTemplates = []
+    }
+  } finally {
+    if (currentRequestId === recommendRequestId) {
+      recommending = false
+    }
+  }
+}
+
+const selectRecommendedTemplate = async (template) => {
+  if (template.type === 'document' || template.type === 'chart') {
+    try {
+      await applyTemplateToEditor(editor, options, template, {
+        prompt,
+        context: getAiContext(editor, options),
+      })
+      emits('update:visible', false)
+    } catch (error) {
+      useMessage('error', error?.message || t('templateLibrary.applyFailed'))
+    }
+    return
+  }
+  selectedTemplateId = template.id || template.value
+  if (!templates.find((item) => (item.id || item.value) === selectedTemplateId)) {
+    templates = [template, ...templates]
   }
 }
 
@@ -424,6 +502,10 @@ const rollbackSelectedVersion = async () => {
     rollingBack = false
   }
 }
+
+onBeforeUnmount(() => {
+  if (recommendTimer) clearTimeout(recommendTimer)
+})
 </script>
 
 <style lang="less">
@@ -466,6 +548,46 @@ const rollbackSelectedVersion = async () => {
   .umo-ai-empty {
     color: var(--umo-text-color-light);
     font-size: 13px;
+  }
+  .umo-ai-recommend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .umo-ai-recommend-title {
+    color: var(--umo-text-color-light);
+    font-size: 13px;
+  }
+  .umo-ai-recommend-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    button {
+      flex: 0 0 150px;
+      min-height: 54px;
+      padding: 7px;
+      border: solid 1px var(--umo-border-color);
+      border-radius: 4px;
+      background: var(--umo-color-white);
+      color: var(--umo-text-color);
+      text-align: left;
+      cursor: pointer;
+      strong,
+      span {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      span {
+        margin-top: 4px;
+        color: var(--umo-text-color-light);
+        font-size: 12px;
+      }
+      &:hover {
+        border-color: var(--umo-primary-color);
+      }
+    }
   }
   .umo-ai-version-layout {
     display: grid;

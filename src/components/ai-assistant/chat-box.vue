@@ -37,6 +37,25 @@
         {{ t('aiAssistant.apply') }}
       </t-button>
     </div>
+    <div v-if="prompt.trim()" class="umo-ai-chat-box-recommend">
+      <div class="umo-ai-chat-box-recommend-title">
+        {{ t('templateLibrary.recommendTitle') }}
+      </div>
+      <div v-if="recommendedTemplates.length" class="umo-ai-chat-box-recommend-list">
+        <button
+          v-for="item in recommendedTemplates"
+          :key="item.id || item.value"
+          type="button"
+          @click="applyRecommendedTemplate(item)"
+        >
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.reason || item.description || item.type }}</span>
+        </button>
+      </div>
+      <div v-else-if="!recommending" class="umo-ai-chat-box-empty">
+        {{ t('templateLibrary.recommendEmpty') }}
+      </div>
+    </div>
     <div class="umo-ai-chat-box-preview">
       <div
         v-if="previewContent"
@@ -53,8 +72,10 @@
 <script setup>
 import {
   applyGeneratedContent,
+  applyTemplateToEditor,
   chatGenerateContent,
   getAiContext,
+  recommendTemplates,
   replaceDocumentContent,
   runContextAction,
 } from '@/composables/ai-assistant'
@@ -83,8 +104,12 @@ const options = inject('options')
 let prompt = $ref('')
 let previewContent = $ref('')
 let loading = $ref(false)
+let recommending = $ref(false)
 let applyMode = $ref('insert')
 let targetRange = $ref(null)
+let recommendedTemplates = $ref([])
+let recommendTimer = null
+let recommendRequestId = 0
 
 const visible = $computed(() => props.visible)
 const title = $computed(() => {
@@ -100,6 +125,19 @@ watch(
     previewContent = ''
     prompt = ''
     targetRange = null
+    recommendedTemplates = []
+  },
+)
+
+watch(
+  () => prompt,
+  () => {
+    if (!props.visible || !prompt.trim()) {
+      recommendedTemplates = []
+      return
+    }
+    if (recommendTimer) clearTimeout(recommendTimer)
+    recommendTimer = setTimeout(loadRecommendations, 450)
   },
 )
 
@@ -148,6 +186,42 @@ const generate = async () => {
   }
 }
 
+const loadRecommendations = async () => {
+  const currentRequestId = ++recommendRequestId
+  recommending = true
+  try {
+    const context = getAiContext(editor, options)
+    const result = await recommendTemplates(options, {
+      prompt,
+      context,
+      types: ['document', 'text', 'chart', 'data'],
+      limit: 5,
+    })
+    if (currentRequestId !== recommendRequestId) return
+    recommendedTemplates = Array.isArray(result) ? result : result?.items || []
+  } catch {
+    if (currentRequestId === recommendRequestId) {
+      recommendedTemplates = []
+    }
+  } finally {
+    if (currentRequestId === recommendRequestId) {
+      recommending = false
+    }
+  }
+}
+
+const applyRecommendedTemplate = async (template) => {
+  try {
+    await applyTemplateToEditor(editor, options, template, {
+      prompt,
+      context: getAiContext(editor, options),
+    })
+    close()
+  } catch (error) {
+    useMessage('error', error?.message || t('templateLibrary.applyFailed'))
+  }
+}
+
 const applyPreview = () => {
   if (!previewContent) return
   const context = getAiContext(editor, options)
@@ -164,6 +238,10 @@ const applyPreview = () => {
 const close = () => {
   emits('update:visible', false)
 }
+
+onBeforeUnmount(() => {
+  if (recommendTimer) clearTimeout(recommendTimer)
+})
 </script>
 
 <style lang="less">
@@ -197,6 +275,47 @@ const close = () => {
   border: solid 1px var(--umo-border-color-light);
   border-radius: 4px;
   padding: 8px;
+}
+.umo-ai-chat-box-recommend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.umo-ai-chat-box-recommend-title {
+  font-size: 12px;
+  color: var(--umo-text-color-light);
+}
+.umo-ai-chat-box-recommend-list {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  button {
+    flex: 0 0 128px;
+    min-height: 52px;
+    border: solid 1px var(--umo-border-color);
+    border-radius: 4px;
+    background: var(--umo-color-white);
+    color: var(--umo-text-color);
+    text-align: left;
+    padding: 6px;
+    cursor: pointer;
+    overflow: hidden;
+    strong,
+    span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    span {
+      color: var(--umo-text-color-light);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+    &:hover {
+      border-color: var(--umo-primary-color);
+    }
+  }
 }
 .umo-ai-chat-box-empty {
   color: var(--umo-text-color-light);

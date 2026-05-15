@@ -812,6 +812,48 @@
     "replaceWarning": "This will replace the current document content. Continue?",
     "empty": "Select a template to preview"
   },
+  "newDocument": {
+    "title": "New Document",
+    "name": "Enter document title",
+    "search": "Search templates",
+    "allCategories": "All",
+    "defaultCategory": "General",
+    "blank": "Blank Document",
+    "blankDescription": "Create a blank document without a template",
+    "blankPreview": "Blank document",
+    "create": "Create Document",
+    "success": "Document created",
+    "failed": "Failed to create document"
+  },
+  "templateLibrary": {
+    "title": "Template Library",
+    "search": "Search templates",
+    "empty": "No templates",
+    "new": "New",
+    "create": "Create template",
+    "update": "Save changes",
+    "delete": "Delete",
+    "apply": "Apply template",
+    "name": "Template name",
+    "description": "Template description",
+    "published": "Published",
+    "draft": "Draft",
+    "contentPlaceholder": "Enter an HTML fragment. Supports field placeholders and [AI:instruction]",
+    "chartPlaceholder": "Enter ECharts options JSON, or {\"chartOptions\":{...}}",
+    "saveSuccess": "Template saved",
+    "deleteSuccess": "Template deleted",
+    "deleteFailed": "Failed to delete template",
+    "applyFailed": "Failed to apply template",
+    "recommendTitle": "Recommended templates",
+    "recommendEmpty": "No recommended templates",
+    "types": {
+      "document": "Document",
+      "text": "Text",
+      "chart": "Chart",
+      "data": "Data",
+      "style": "Style"
+    }
+  },
   "aiAssistant": {
     "title": "AI Assistant",
     "generate": "Template generation",

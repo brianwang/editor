@@ -151,6 +151,81 @@ export const listTemplates = async (optionsRef, params = {}) => {
   return optionsRef.value.documentTemplates || []
 }
 
+export const saveTemplateRecord = async (optionsRef, payload) => {
+  const store = optionsRef.value.templateStore
+  return await callConfigured(
+    store?.save,
+    'template-save-requested',
+    payload,
+  )
+}
+
+export const updateTemplateRecord = async (optionsRef, payload) => {
+  const store = optionsRef.value.templateStore
+  if (typeof store?.update === 'function') {
+    return await store.update(payload)
+  }
+  return await saveTemplateRecord(optionsRef, payload)
+}
+
+export const deleteTemplateRecord = async (optionsRef, templateId) => {
+  const store = optionsRef.value.templateStore
+  if (typeof store?.delete === 'function') {
+    return await store.delete(templateId)
+  }
+  return await requestExternal('template-delete-requested', { templateId })
+}
+
+export const recommendTemplates = async (optionsRef, payload) => {
+  const store = optionsRef.value.templateStore
+  if (typeof store?.recommend === 'function') {
+    return await store.recommend(payload)
+  }
+  const templates = await listTemplates(optionsRef, {
+    status: 'published',
+  })
+  const query = `${payload.prompt || ''} ${payload.context?.currentBlock?.text || ''}`.toLowerCase()
+  return templates
+    .map((item) => {
+      const haystack = `${item.title || ''} ${item.description || ''} ${(item.tags || []).join(' ')}`.toLowerCase()
+      const score = query
+        .split(/\s+/)
+        .filter(Boolean)
+        .reduce((total, word) => total + (haystack.includes(word) ? 1 : 0), 0)
+      return { ...item, score, reason: score ? '本地关键词匹配' : '默认推荐' }
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, payload.limit || 6)
+}
+
+export const renderTemplate = async (optionsRef, payload) => {
+  const store = optionsRef.value.templateStore
+  if (typeof store?.render === 'function') {
+    return await store.render(payload)
+  }
+  return {
+    content: payload.template?.content || payload.content || '',
+    html: payload.template?.content || payload.content || '',
+    text: '',
+  }
+}
+
+export const createDocument = async (optionsRef, payload) => {
+  const store = optionsRef.value.templateStore
+  if (typeof store?.createDocument === 'function') {
+    return await store.createDocument(payload)
+  }
+  return { id: null, title: payload.title, template_id: payload.templateId || null }
+}
+
+export const updateDocument = async (optionsRef, payload) => {
+  const store = optionsRef.value.templateStore
+  if (typeof store?.updateDocument === 'function') {
+    return await store.updateDocument(payload)
+  }
+  return payload
+}
+
 export const listStyleTemplates = async (optionsRef) => {
   const store = optionsRef.value.templateStore
   if (typeof store?.listStyleTemplates === 'function') {
@@ -175,12 +250,7 @@ export const applyStyleTemplate = async (optionsRef, payload) => {
 }
 
 export const saveTemplate = async (optionsRef, payload) => {
-  const store = optionsRef.value.templateStore
-  return await callConfigured(
-    store?.save,
-    'template-save-requested',
-    payload,
-  )
+  return await saveTemplateRecord(optionsRef, payload)
 }
 
 export const listTemplateVersions = async (optionsRef, templateId) => {
@@ -216,4 +286,64 @@ export const applyGeneratedContent = (editorRef, content, range) => {
 export const replaceDocumentContent = (editorRef, content) => {
   if (!editorRef.value || !content) return
   editorRef.value.commands.setContent(content)
+}
+
+const normalizeChartAttrs = (template = {}) => {
+  const source = template.chartConfig || template.chart_config || template.sourceConfig || template.source_config || {}
+  const content = template.content || ''
+  if (source.chartOptions || source.chartConfig) {
+    return {
+      id: crypto.randomUUID(),
+      name: template.title || '',
+      mode: source.mode ?? (source.chartOptions ? 0 : 1),
+      chartOptions: source.chartOptions || null,
+      chartConfig: source.chartConfig || null,
+      describe: template.description || '',
+      nodeAlign: 'center',
+      margin: {},
+    }
+  }
+  try {
+    const parsed = typeof content === 'string' && content.trim() ? JSON.parse(content) : {}
+    return {
+      id: crypto.randomUUID(),
+      name: template.title || '',
+      mode: parsed.mode ?? (parsed.chartOptions ? 0 : 1),
+      chartOptions: parsed.chartOptions || (parsed.series ? parsed : null),
+      chartConfig: parsed.chartConfig || null,
+      describe: template.description || '',
+      nodeAlign: 'center',
+      margin: {},
+    }
+  } catch {
+    return null
+  }
+}
+
+export const applyTemplateToEditor = async (editorRef, optionsRef, template, payload = {}) => {
+  const type = template?.type || 'text'
+  if (type === 'chart') {
+    const attrs = normalizeChartAttrs(template)
+    if (!attrs) throw new Error('图表模板配置无效')
+    editorRef.value?.chain().focus().run()
+    editorRef.value?.commands.setEcharts(attrs)
+    return
+  }
+  const context = payload.context || getAiContext(editorRef, optionsRef)
+  const result = await renderTemplate(optionsRef, {
+    template,
+    context,
+    prompt: payload.prompt || '',
+  })
+  const content = result?.content || result?.html || result?.text || template?.content || ''
+  if (!content) return
+  if (type === 'document') {
+    replaceDocumentContent(editorRef, content)
+    return
+  }
+  if (!context.selection?.empty) {
+    applyGeneratedContent(editorRef, content, context.selection)
+    return
+  }
+  applyGeneratedContent(editorRef, content)
 }

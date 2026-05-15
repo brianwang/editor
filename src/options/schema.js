@@ -599,6 +599,24 @@ export default new ObjectSchema({
         },
         required: false,
       },
+      update: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "update" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      delete: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "delete" must be a async function.')
+          }
+        },
+        required: false,
+      },
       versions: {
         merge: 'replace',
         validate(value) {
@@ -631,6 +649,51 @@ export default new ObjectSchema({
         validate(value) {
           if (value && !isAsyncFunction(value)) {
             throw new Error('Key "templateStore": Key "applyStyleTemplate" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      recommend: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "recommend" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      render: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "render" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      fromData: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "fromData" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      createDocument: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "createDocument" must be a async function.')
+          }
+        },
+        required: false,
+      },
+      updateDocument: {
+        merge: 'replace',
+        validate(value) {
+          if (value && !isAsyncFunction(value)) {
+            throw new Error('Key "templateStore": Key "updateDocument" must be a async function.')
           }
         },
         required: false,
