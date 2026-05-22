@@ -283,6 +283,13 @@
     "toggleHeaderColumn": "切换表头列"
   },
   "tools": {
+    "speechInput": {
+      "start": "语音输入",
+      "stop": "停止语音输入",
+      "unsupported": "当前浏览器不支持语音输入",
+      "permissionDenied": "麦克风权限被拒绝",
+      "failed": "语音输入启动失败"
+    },
     "barcode": {
       "text": "条形码",
       "edit": "编辑条形码",

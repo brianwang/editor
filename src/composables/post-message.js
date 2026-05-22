@@ -4,6 +4,7 @@
  * Parent → Editor:
  *   { type: 'load-content',    html: string }
  *   { type: 'replace-content', html: string }
+ *   { type: 'insert-text',     text: string }
  *   { type: 'set-readonly',    readonly: boolean }
  *   { type: 'ai-action-result', selectionId: string, result: string, mode: 'insert'|'replace' }
  *   { type: 'ai-template-generate-result', requestId: string, result: { content: string } }
@@ -53,13 +54,17 @@ export function postToParent(data) {
  */
 export function setupPostMessageListener(editorRef) {
   const handler = (event) => {
-    const { type, html, readonly } = event.data ?? {}
+    const { type, html, text, readonly } = event.data ?? {}
 
     if (type === 'load-content' && html !== null && html !== undefined) {
       editorRef.value?.setContent(html)
     }
     if (type === 'replace-content' && html !== null && html !== undefined) {
       editorRef.value?.setContent(html)
+    }
+    if (type === 'insert-text' && text !== null && text !== undefined) {
+      const value = String(text || '').trim()
+      if (value) editorRef.value?.insertContent(value)
     }
     if (type === 'set-readonly') {
       editorRef.value?.setEditable(!readonly)

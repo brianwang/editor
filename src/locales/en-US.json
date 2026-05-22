@@ -283,6 +283,13 @@
     "toggleHeaderColumn": "Header Column"
   },
   "tools": {
+    "speechInput": {
+      "start": "Voice input",
+      "stop": "Stop voice input",
+      "unsupported": "Voice input is not supported by this browser",
+      "permissionDenied": "Microphone permission denied",
+      "failed": "Failed to start voice input"
+    },
     "barcode": {
       "text": "Barcode",
       "edit": "Edit Barcode",

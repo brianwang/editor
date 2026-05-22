@@ -8,11 +8,12 @@ const backendBaseUrl = () => {
 }
 
 const requestJson = async (path, options = {}) => {
+  const headers = {
+    ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+    ...(options.headers || {}),
+  }
   const response = await fetch(`${backendBaseUrl()}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
+    headers,
     ...options,
   })
   const data = await response.json().catch(() => null)
@@ -20,6 +21,22 @@ const requestJson = async (path, options = {}) => {
     throw new Error(data?.detail || data?.message || `请求失败：${response.status}`)
   }
   return data
+}
+
+export const transcribeEditorVoice = async (audioBlob) => {
+  const form = new FormData()
+  form.append('audio', audioBlob, 'voice.wav')
+  const response = await fetch(`${backendBaseUrl()}/api/chat/voice/transcribe`, {
+    method: 'POST',
+    body: form,
+  })
+  const data = await response.json().catch(() => null)
+  if (!response.ok) {
+    throw new Error(data?.detail || data?.message || `语音识别失败：${response.status}`)
+  }
+  const text = typeof data?.text === 'string' ? data.text.trim() : ''
+  if (!text) throw new Error('语音识别未返回文本')
+  return text
 }
 
 const normalizeTemplate = (item = {}) => ({
